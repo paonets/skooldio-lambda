@@ -1,66 +1,73 @@
-Welcome to the AWS CodeStar sample web service
+Welcome to Serverless with AWS Lambda Workshop by Skooldio 
 ==============================================
 
-This sample code helps get you started with a simple Express web service
-deployed by AWS CloudFormation to AWS Lambda and Amazon API Gateway.
+This sample code helps you learn how to build and deploy applications to AWS Lambda using AWS Cloudformation by providing
+* A simple Express.js web service to index and search faces by calling AWS Rekoginition service
+* A Lambda function triggered by S3 file upload to analyze facial image by calling AWS Rekoginition service
 
-What's Here
------------
+## Prerequisite
 
-This sample includes:
+* AWS CLI
+> Append an option `--profile yourprofile` for all commands to use a particular profile in your credential file
 
-* README.md - this file
-* buildspec.yml - this file is used by AWS CodeBuild to package your
-  service for deployment to AWS Lambda
-* app.js - this file contains the sample Node.js code for the web service
-* index.js - this file contains the AWS Lambda handler code
-* template.yml - this file contains the AWS Serverless Application Model (AWS SAM) used
-  by AWS CloudFormation to deploy your service to AWS Lambda and Amazon API
-  Gateway.
-* tests/ - this directory contains unit tests for your application
-* template-configuration.json - this file contains the project ARN with placeholders used for tagging resources with the project ID
+## Create a new Face collection
+We will need to create a new face colleciton named `skooldio` in Rekognition service. Run a command
+```shell
+$ aws rekognition create-collection --collection-id skooldio
+```
 
-What Do I Do Next?
-------------------
+## Run locally
+We will need an S3 bucket to store face images. 
 
-If you have checked out a local copy of your repository you can start making
-changes to the sample code.  We suggest making a small change to app.js first,
-so you can see how changes pushed to your project's repository are automatically
-picked up by your project pipeline and deployed to AWS Lambda and Amazon API Gateway.
-(You can watch the pipeline progress on your AWS CodeStar project dashboard.)
-Once you've seen how that works, start developing your own code, and have fun!
+> By default, AWS SDK will use AWS credentials from your AWS CLI. You can set `AWS_PROFILE` env variable to use a particular profile in your credential
 
-To run your tests locally, go to the root directory of the
-sample code and run the `npm test` command, which
-AWS CodeBuild also runs through your `buildspec.yml` file.
+```shell
+$ npm install
+$ node api/local.js
+```
 
-To test your new code during the release process, modify the existing tests or
-add tests to the tests directory. AWS CodeBuild will run the tests during the
-build stage of your project pipeline. You can find the test results
-in the AWS CodeBuild console.
+Use postman collection and env files in `/postman` to test your API.
 
-Learn more about AWS CodeBuild and how it builds and tests your application here:
-https://docs.aws.amazon.com/codebuild/latest/userguide/concepts.html
+## Workshop: API
+The js code for API is in `/api`
+* Create a Lambda handler for Express.js by using a lib [aws-serverless-express](https://github.com/awslabs/aws-serverless-express).
+  * Put the handler in a file ```api/lambda.js``` 
+* Modify `template.yml` by adding a Lambda function and S3 resources. We can pass S3 bucket name as an env variable to function. For references, see
+  * https://github.com/awslabs/serverless-application-model
+  * SAM API backend example
+  * [SAM Template Specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md)
+  * You will need to give appropriate permissions to your Lambda to interact with other AWS resources by specifying policies. See [Lambda Managed Policies](https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html) and [SAM Policy templates](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html). You will at least need `AWSLambdaBasicExecutionRole` so your Lambda can upload logs to CloudWatch.
+* Deploy using commands in [section](#deploy-using-aws-cloudformation) below. Once your stack has been created, find your endpoint of API Gateway in the AWS Console to start testing your API.
 
-Learn more about AWS Serverless Application Model (AWS SAM) and how it works here:
-https://github.com/awslabs/serverless-application-model/blob/master/HOWTO.md
+## Workshop: S3
+The js code for S3 event processing is in `/s3`
+* Modify `template.yml` by adding a new Lambda function resource is triggered by S3 upload event. See example [template](https://github.com/awslabs/serverless-application-model/blob/master/examples/apps/s3-get-object/template.yaml)
 
-AWS Lambda Developer Guide:
-http://docs.aws.amazon.com/lambda/latest/dg/deploying-lambda-apps.html
+## Deploy using AWS Cloudformation
+First, you will need an S3 bucket for AWS Cloudformation to upload your code for deployment. To create a bucket, run following command with your own unique bucket name.
+```shell
+$ aws s3 mb s3://{your-code-bucket}
+```
 
-Learn more about AWS CodeStar by reading the user guide, and post questions and
-comments about AWS CodeStar on our forum.
+Then run following commands to package and deploy your CloudFormation stack. Replace `{some-bucket}` and `{stack-name}` with proper name.
 
-User Guide: http://docs.aws.amazon.com/codestar/latest/userguide/welcome.html
+```shell
+$ aws cloudformation package \
+         --template-file template.yml \
+         --output-template-file template-export.yml \
+         --s3-bucket {your-code-bucket}
 
-Forum: https://forums.aws.amazon.com/forum.jspa?forumID=248
+$ aws cloudformation deploy \
+         --template-file template-export.yml \
+         --capabilities CAPABILITY_IAM \
+         --stack-name {stack-name}
+```
+The template should also create an S3 bucket for you and pass a bucket name an env variable to your Lambda functions.
 
-What Should I Do Before Running My Project in Production?
-------------------
-
-AWS recommends you review the security best practices recommended by the framework
-author of your selected sample application before running it in production. You
-should also regularly review and apply any available patches or associated security
-advisories for dependencies used within your application.
-
-Best Practices: https://docs.aws.amazon.com/codestar/latest/userguide/best-practices.html?icmpid=docs_acs_rm_sec
+## Delete all resources
+After finishing the workshop, you can delete all the resources using following commands
+```shell
+$ aws rekognition delete-collection --collection-id skooldio
+$ aws cloudformation delete-stack --stack-name {stack-name}
+$ aws s3 rb s3://{your-code-bucket}
+```

@@ -1,15 +1,8 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform:
 - AWS::Serverless-2016-10-31
-- AWS::CodeStar
 
 Parameters:
-  ProjectId:
-    Type: String
-    Description: AWS CodeStar projectID used to associate new resources to team members
-  CodeDeployRole:
-    Type: String
-    Description: IAM role to allow AWS CodeDeploy to manage deployment of AWS Lambda functions
   Stage:
     Type: String
     Description: The name for a project pipeline stage, such as Staging or Prod, for which resources are provisioned and deployed.
@@ -17,48 +10,45 @@ Parameters:
 
 Globals:
   Function:
-    AutoPublishAlias: live
-    DeploymentPreference:
-      Enabled: true
-      Type: Canary10Percent5Minutes
-      Role: !Ref CodeDeployRole
+    Runtime: nodejs8.10
+    Timeout: 120
+    MemorySize: 512
+    Environment:
+      Variables:
+        STAGE: !Ref Stage
+        NODE_ENV: production
 
 Resources:
-  HelloWorld:
+  FaceSearchApi:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: index.handler
-      Runtime: nodejs8.10
+      Handler: api/lambda.handler
+      CodeUri: .
       Environment:
         Variables:
-          NODE_ENV: production
-      Role:
-        Fn::GetAtt:
-        - LambdaExecutionRole
-        - Arn
+          S3_BUCKET: !Ref FaceImageBucket
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - S3ReadPolicy:
+            BucketName: !Ref FaceImageBucket
+        - RekognitionReadPolicy:
+            CollectionId: skooldio
       Events:
-        GetEvent:
+        FaceGetEvent:
           Type: Api
           Properties:
-            Path: /
+            Path: /face
             Method: get
-        PostEvent:
+        FacePostEvent:
           Type: Api
           Properties:
-            Path: /
+            Path: /face
             Method: post
-  LambdaExecutionRole:
-    Description: Creating service role in IAM for AWS Lambda
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub 'CodeStar-${ProjectId}-Execution${Stage}'
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: [lambda.amazonaws.com]
-          Action: sts:AssumeRole
-      Path: /
-      ManagedPolicyArns:
-        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-      PermissionsBoundary: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary'
+
+  FaceImageBucket:
+    Type: AWS::S3::Bucket
+
+Outputs:
+  S3Bucket:
+    Description: "S3 Bucket name that will trigger a Lambda function upon new objects insertion"
+    Value: !Ref FaceImageBucket

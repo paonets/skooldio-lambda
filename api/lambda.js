@@ -1,5 +1,8 @@
 'use strict';
 
+console.log('initializing app')
+console.log('env', process.env)
+
 const awsServerlessExpress = require('aws-serverless-express')
 const app = require('./app')
 const server = awsServerlessExpress.createServer(app)

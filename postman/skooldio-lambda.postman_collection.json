@@ -1,0 +1,65 @@
+{
+	"variables": [],
+	"info": {
+		"name": "skooldio-lambda",
+		"_postman_id": "d1aaab79-2c70-36cc-848b-723e438d46b1",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add face",
+			"request": {
+				"url": "{{hostname}}/face",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"s3bucket\": \"{{s3bucket}}\",\n\t\"s3path\": \"A1.jpg\",\n\t\"name\": \"A1\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Search face",
+			"request": {
+				"url": {
+					"raw": "{{hostname}}/face?s3bucket=skooldio-face-image-1564388793&s3path=A1.jpg",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"face"
+					],
+					"query": [
+						{
+							"key": "s3bucket",
+							"value": "skooldio-face-image-1564388793",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "s3path",
+							"value": "A1.jpg",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
