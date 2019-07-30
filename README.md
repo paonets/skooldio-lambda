@@ -34,8 +34,8 @@ The js code for API is in `/api`
   * Put the handler in a file ```api/lambda.js``` 
 * Modify `template.yml` by adding a Lambda function and S3 resources. We can pass S3 bucket name as an env variable to function. For references, see
   * https://github.com/awslabs/serverless-application-model
-  * SAM API backend example
-  * [SAM Template Specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md)
+    * [SAM API backend example](https://github.com/awslabs/serverless-application-model/blob/master/examples/2016-10-31/api_backend/template.yaml)
+    * [SAM Template Specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md)
   * You will need to give appropriate permissions to your Lambda to interact with other AWS resources by specifying policies. See [Lambda Managed Policies](https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html) and [SAM Policy templates](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html). You will at least need `AWSLambdaBasicExecutionRole` so your Lambda can upload logs to CloudWatch.
 * Deploy using commands in [section](#deploy-using-aws-cloudformation) below. Once your stack has been created, find your endpoint of API Gateway in the AWS Console to start testing your API.
 

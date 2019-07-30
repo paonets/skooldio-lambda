@@ -5,7 +5,7 @@ Transform:
 Parameters:
   Stage:
     Type: String
-    Description: The name for a project pipeline stage, such as Staging or Prod, for which resources are provisioned and deployed.
+    Description: The name for a project pipeline stage, such as staging or prod, for which resources are provisioned and deployed.
     Default: ''
 
 Globals:
@@ -26,11 +26,11 @@ Resources:
       CodeUri: .
       Environment:
         Variables:
-          S3_BUCKET: !Ref FaceImageBucket
+          S3_BUCKET: !Sub "face-image-bucket-${Stage}-${AWS::AccountId}"
       Policies:
         - AWSLambdaBasicExecutionRole
         - S3ReadPolicy:
-            BucketName: !Ref FaceImageBucket
+            BucketName: !Sub "face-image-bucket-${Stage}-${AWS::AccountId}"
         - RekognitionReadPolicy:
             CollectionId: skooldio
       Events:
@@ -44,9 +44,35 @@ Resources:
           Properties:
             Path: /face
             Method: post
-
+  FaceDetectS3:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: s3/lambda.handler
+      CodeUri: .
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - S3CrudPolicy:
+            BucketName: !Sub "face-image-bucket-${Stage}-${AWS::AccountId}"
+        - RekognitionDetectOnlyPolicy: {}
+      Events:
+        S3ObjectCreateEvent:
+          Type: S3
+          Properties:
+            Bucket:
+              Ref: FaceImageBucket
+            Events:
+              - 's3:ObjectCreated:*'
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .jpg
   FaceImageBucket:
     Type: AWS::S3::Bucket
+    Properties:
+      # Need to specify bucket name to avoid circular dependency
+      # See https://aws.amazon.com/blogs/infrastructure-and-automation/handling-circular-dependency-errors-in-aws-cloudformation/
+      BucketName: !Sub "face-image-bucket-${Stage}-${AWS::AccountId}"
 
 Outputs:
   S3Bucket:

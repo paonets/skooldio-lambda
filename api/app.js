@@ -12,7 +12,7 @@ app.use(bodyParser.json())
 AWS.config.update({
 	region: 'ap-southeast-1',
 });
-var rekognition = new AWS.Rekognition()
+var rekognition = new AWS.Rekognition({apiVersion: '2016-06-27'})
 
 
 app.get('/face', function(req, res) {
