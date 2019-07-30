@@ -9,7 +9,6 @@ Globals:
     MemorySize: 512
     Environment:
       Variables:
-        STAGE: !Ref Stage
         NODE_ENV: production
 
 Resources:
