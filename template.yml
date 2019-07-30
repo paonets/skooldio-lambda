@@ -9,7 +9,6 @@ Globals:
     MemorySize: 512
     Environment:
       Variables:
-        STAGE: !Ref Stage
         NODE_ENV: production
 
 Resources:
@@ -19,25 +18,12 @@ Resources:
       Handler: api/lambda.handler
       CodeUri: .
       Environment:
-        Variables:
-          S3_BUCKET: !Sub "face-image-bucket-${AWS::AccountId}"
+        # Add environment variable for S3
       Policies:
         - AWSLambdaBasicExecutionRole
-        - S3ReadPolicy:
-            BucketName: !Sub "face-image-bucket-${AWS::AccountId}"
-        - RekognitionReadPolicy:
-            CollectionId: skooldio
+        # Add more policies
       Events:
-        FaceGetEvent:
-          Type: Api
-          Properties:
-            Path: /face
-            Method: get
-        FacePostEvent:
-          Type: Api
-          Properties:
-            Path: /face
-            Method: post
+        # Add events
   FaceImageBucket:
     Type: AWS::S3::Bucket
     Properties:
