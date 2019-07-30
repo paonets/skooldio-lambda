@@ -41,7 +41,11 @@ The js code for API is in `/api`
 
 ## Workshop: S3
 The js code for S3 event processing is in `/s3`
-* Modify `template.yml` by adding a new Lambda function resource is triggered by S3 upload event. See example [template](https://github.com/awslabs/serverless-application-model/blob/master/examples/apps/s3-get-object/template.yaml)
+* Modify `s3/test.js` to test the feature locally by running command
+```
+$ node s3/test.js
+```
+* Create a Lambda handler and modify `template.yml` based on [example](https://github.com/awslabs/serverless-application-model/tree/master/examples/apps/s3-get-object)
 
 ## Deploy using AWS Cloudformation
 First, you will need an S3 bucket for AWS Cloudformation to upload your code for deployment. To create a bucket, run following command with your own unique bucket name.
