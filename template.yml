@@ -73,8 +73,3 @@ Resources:
       # Need to specify bucket name to avoid circular dependency
       # See https://aws.amazon.com/blogs/infrastructure-and-automation/handling-circular-dependency-errors-in-aws-cloudformation/
       BucketName: !Sub "face-image-bucket-${Stage}-${AWS::AccountId}"
-
-Outputs:
-  S3Bucket:
-    Description: "S3 Bucket name that will trigger a Lambda function upon new objects insertion"
-    Value: !Ref FaceImageBucket
