@@ -31,7 +31,7 @@
 			"name": "Search face",
 			"request": {
 				"url": {
-					"raw": "{{hostname}}/face?s3bucket=skooldio-face-image-1564388793&s3path=A1.jpg",
+					"raw": "{{hostname}}/face?s3bucket={{s3bucket}}&s3path=A1.jpg",
 					"host": [
 						"{{hostname}}"
 					],
@@ -41,7 +41,7 @@
 					"query": [
 						{
 							"key": "s3bucket",
-							"value": "skooldio-face-image-1564388793",
+							"value": "{{s3bucket}}",
 							"equals": true,
 							"description": ""
 						},
