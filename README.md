@@ -85,7 +85,7 @@ $ aws cloudformation deploy \
 The template should also create an S3 bucket for you and pass a bucket name an env variable to your Lambda functions.
 
 ## Delete all resources
-After finishing the workshop, you can delete all the resources using following commands
+After finishing the workshop, you can delete all the resources using following commands. But before deleting CloudFormation stack, you need to empty s3 buckets created by CloudFormation first.
 ```shell
 $ aws rekognition delete-collection --collection-id skooldio
 $ aws cloudformation delete-stack --stack-name {stack-name}
