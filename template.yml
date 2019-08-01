@@ -15,15 +15,15 @@ Resources:
   FaceSearchApi:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: api/lambda.handler
-      CodeUri: .
+      Handler: # TODO: Add handler
+      CodeUri: # TODO: Add CodeUri
       Environment:
-        # Add environment variable for S3
+        # TODO: Add environment variable for S3
       Policies:
         - AWSLambdaBasicExecutionRole
-        # Add more policies
+        # TODO: Add more policies
       Events:
-        # Add events
+        # TODO: Add events
   FaceImageBucket:
     Type: AWS::S3::Bucket
     Properties:
