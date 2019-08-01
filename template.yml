@@ -26,6 +26,8 @@ Resources:
             BucketName: !Sub "face-image-bucket-${AWS::AccountId}"
         - RekognitionReadPolicy:
             CollectionId: skooldio
+        - RekognitionWriteOnlyAccessPolicy:
+            CollectionId: skooldio
       Events:
         FaceGetEvent:
           Type: Api
@@ -40,6 +42,5 @@ Resources:
   FaceImageBucket:
     Type: AWS::S3::Bucket
     Properties:
-      # Need to specify bucket name to avoid circular dependency
-      # See https://aws.amazon.com/blogs/infrastructure-and-automation/handling-circular-dependency-errors-in-aws-cloudformation/
+      # Need to specify bucket name to avoid circular dependency # See https://aws.amazon.com/blogs/infrastructure-and-automation/handling-circular-dependency-errors-in-aws-cloudformation/
       BucketName: !Sub "face-image-bucket-${AWS::AccountId}"
