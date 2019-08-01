@@ -2,12 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 Transform:
 - AWS::Serverless-2016-10-31
 
-Parameters:
-  Stage:
-    Type: String
-    Description: The name for a project pipeline stage, such as staging or prod, for which resources are provisioned and deployed.
-    Default: ''
-
 Globals:
   Function:
     Runtime: nodejs8.10
@@ -26,12 +20,14 @@ Resources:
       CodeUri: .
       Environment:
         Variables:
-          S3_BUCKET: !Sub "face-image-bucket-${Stage}-${AWS::AccountId}"
+          S3_BUCKET: !Sub "face-image-bucket-${AWS::AccountId}"
       Policies:
         - AWSLambdaBasicExecutionRole
         - S3ReadPolicy:
-            BucketName: !Sub "face-image-bucket-${Stage}-${AWS::AccountId}"
+            BucketName: !Sub "face-image-bucket-${AWS::AccountId}"
         - RekognitionReadPolicy:
+            CollectionId: skooldio
+        - RekognitionWriteOnlyAccessPolicy:
             CollectionId: skooldio
       Events:
         FaceGetEvent:
@@ -52,7 +48,7 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - S3CrudPolicy:
-            BucketName: !Sub "face-image-bucket-${Stage}-${AWS::AccountId}"
+            BucketName: !Sub "face-image-bucket-${AWS::AccountId}"
         - RekognitionDetectOnlyPolicy: {}
       Events:
         S3ObjectCreateEvent:
@@ -70,6 +66,5 @@ Resources:
   FaceImageBucket:
     Type: AWS::S3::Bucket
     Properties:
-      # Need to specify bucket name to avoid circular dependency
-      # See https://aws.amazon.com/blogs/infrastructure-and-automation/handling-circular-dependency-errors-in-aws-cloudformation/
-      BucketName: !Sub "face-image-bucket-${Stage}-${AWS::AccountId}"
+      # Need to specify bucket name to avoid circular dependency. See https://aws.amazon.com/blogs/infrastructure-and-automation/handling-circular-dependency-errors-in-aws-cloudformation/
+      BucketName: !Sub "face-image-bucket-${AWS::AccountId}"
