@@ -8,7 +8,15 @@ This sample code helps you learn how to build and deploy applications to AWS Lam
 ## Prerequisite
 
 * AWS CLI
-> Append an option `--profile yourprofile` for all commands to use a particular profile in your credential file
+If you want to use a particular AWS CLI credential profile. Run following command to set it as default profile for this workshop. 
+```shell
+Windows
+C:\> setx AWS_DEFAULT_PROFILE yourprofile
+
+Mac
+$ export AWS_DEFAULT_PROFILE=yourprofile
+``` 
+
 
 ## Create a new Face collection
 We will need to create a new face colleciton named `skooldio` in Rekognition service. Run a command
@@ -17,19 +25,27 @@ $ aws rekognition create-collection --collection-id skooldio
 ```
 
 ## Run locally
-We will need an S3 bucket to store face images. 
+By default, AWS SDK for Javascript will use credentials from your AWS CLI. You can set `AWS_PROFILE` env variable to use a particular profile in your credential.
+```shell
+Windows
+C:\> setx AWS_PROFILE yourprofile
 
-> By default, AWS SDK will use AWS credentials from your AWS CLI. You can set `AWS_PROFILE` env variable to use a particular profile in your credential
+Mac
+$ export AWS_PROFILE=yourprofile
+``` 
+
+Then run following commands to start Express.js server on http://localhost:3001
 
 ```shell
 $ npm install
 $ node api/local.js
 ```
 
-Use postman collection and env files in `/postman` to test your API.
+Before you can index or search faces, you will need an S3 bucket to store face images. You can use existing one or create a new one. 
+
+Use postman collection and environment files in `/postman` to test your API.
 
 ## Workshop: API
-The js code for API is in `/api`
 * Create a Lambda handler for Express.js by using a lib [aws-serverless-express](https://github.com/awslabs/aws-serverless-express).
   * Put the handler in a file ```api/lambda.js``` 
 * Modify `template.yml` by adding a Lambda function and S3 resources. We can pass S3 bucket name as an env variable to function. For references, see
